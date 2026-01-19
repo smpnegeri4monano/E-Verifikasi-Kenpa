@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Verifikasi KENPA Guru - SMPN 4 Monano</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --success: #2ecc71;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-800: #1e293b;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f0f2f5;
+            /* Background dekoratif lembut */
+            background-image: radial-gradient(at 0% 0%, rgba(67, 97, 238, 0.1) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(72, 149, 239, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--slate-800);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        /* Watermark Halus */
+        .container::after {
+            content: "SMPN 4 MONANO";
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--slate-100);
+            pointer-events: none;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h2 { 
+            color: var(--slate-800); 
+            font-size: 28px; 
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle { 
+            color: #64748b; 
+            font-size: 15px; 
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Styling Tabel */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 1200px;
+            background: white;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            padding: 16px 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 10px;
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        /* Hover effect pada baris */
+        tr:hover td {
+            background-color: rgba(67, 97, 238, 0.02);
+        }
+
+        /* Row Logic Colors - Dibuat lebih soft */
+        .row-green td { background-color: #f0fdf4 !important; }
+        .row-red td { background-color: #fef2f2 !important; }
+        .row-green { border-left: 4px solid var(--success); }
+        .row-red { border-left: 4px solid var(--danger); }
+
+        .name-cell { 
+            font-weight: 700; 
+            color: var(--slate-800); 
+            font-size: 13px;
+            display: block;
+        }
+
+        .mk-label { 
+            font-size: 11px; 
+            color: var(--primary); 
+            font-weight: 600; 
+            display: inline-block;
+            margin-top: 6px;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        
+        .data-value { 
+            font-weight: 600; 
+            color: #334155; 
+            display: block;
+            font-family: 'Courier New', Courier, monospace; /* Untuk angka agar rapi */
+        }
+
+        /* Input & Select Styling */
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 11px;
+            font-family: inherit;
+            color: var(--slate-800);
+            background-color: #ffffff;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .input-koreksi {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .example-text {
+            display: block;
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Button Styling */
+        .btn-save {
+            display: block;
+            width: 320px;
+            margin: 50px auto 0;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-save:hover { 
+            background: #3451d1; 
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-save:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive Label */
+        .badge-status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h2>Verifikasi Data Kenaikan Pangkat & Masa Kerja</h2>
+        <p class="subtitle">SMP Negeri 4 Monano • Tahun Pelajaran 2025/2026</p>
+    </div>
+
+    <div class="table-container">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 220px;">Identitas Guru</th>
+                    <th colspan="2">Informasi Golongan</th>
+                    <th colspan="2">Informasi Berkala</th>
+                    <th colspan="2">Validasi Data Terbaru</th>
+                    <th colspan="2">Validasi Data MyASN</th>
+                </tr>
+                <tr>
+                    <th>Golongan</th>
+                    <th>TMT Pangkat</th>
+                    <th>Gaji Pokok</th>
+                    <th>TMT Berkala</th>
+                    <th style="width: 140px;">Status</th>
+                    <th style="width: 200px;">Koreksi Riil</th>
+                    <th style="width: 140px;">Status</th>
+                    <th style="width: 200px;">Koreksi MyASN</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <button class="btn-save" onclick="saveAll()">
+        Simpan Seluruh Perubahan
+    </button>
+</div>
+
+<script>
+    const dataGuru = [
+        { id: 1, nama: "Rano Tahuhe, S.Pd.", mk: "Masa Kerja 14 Tahun 0 Bulan", gol: "III/D", tmtPkt: "1 Oktober 2018", gaji: "3.628.900", tmtBer: "1 Januari 2024" },
+        { id: 2, nama: "Ridwan Hasan Pantu, Ss", mk: "Masa Kerja 16 Tahun 0 Bulan", gol: "III/D", tmtPkt: "1 April 2019", gaji: "4.042.500", tmtBer: "1 Januari 2026" },
+        { id: 3, nama: "Hadija K. Atima, S.Pd.I", mk: "Masa Kerja 14 Tahun 0 Bulan", gol: "III/D", tmtPkt: "1 April 2018", gaji: "3.628.900", tmtBer: "1 Januari 2023" },
+        { id: 4, nama: "Sulastri Harun, S.Kom.", mk: "Masa Kerja 14 Tahun 0 Bulan", gol: "III/D", tmtPkt: "1 April 2019", gaji: "3.628.900", tmtBer: "1 Januari 2024" },
+        { id: 5, nama: "Zainab K. Hamimu, S.Pd.", mk: "Masa Kerja 10 Tahun 0 Bulan", gol: "III/C", tmtPkt: "1 April 2023", gaji: "3.533.900", tmtBer: "1 Maret 2025" },
+        { id: 6, nama: "Basmawati, S.Pd.", mk: "Masa Kerja 8 Tahun 0 Bulan", gol: "III/B", tmtPkt: "1 Oktober 2021", gaji: "3.287.000", tmtBer: "1 Agustus 2025" },
+        { id: 7, nama: "Muhlis Dudokia, S.Pd.", mk: "Masa Kerja 6 Tahun 0 Bulan", gol: "III/B", tmtPkt: "1 April 2023", gaji: "3.186.600", tmtBer: "1 Maret 2025" },
+        { id: 8, nama: "Sandrawati Anwar, S.Pd.", mk: "Masa Kerja 6 Tahun 0 Bulan", gol: "III/B", tmtPkt: "1 April 2023", gaji: "3.186.600", tmtBer: "1 Maret 2025" },
+        { id: 9, nama: "Mohamad. Fadlianto S. Mento, S.Kom.", mk: "Masa Kerja 0 Tahun 0 Bulan", gol: "IX", tmtPkt: "1 Maret 2022", gaji: "2.966.500", tmtBer: "1 Maret 2022" },
+        { id: 10, nama: "Rita Uno, S.Pd.", mk: "Masa Kerja 0 Tahun 0 Bulan", gol: "IX", tmtPkt: "1 Juli 2023", gaji: "2.966.500", tmtBer: "1 Juli 2023" }
+    ];
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        const saved = JSON.parse(localStorage.getItem('kenpa_v6_data')) || {};
+
+        tbody.innerHTML = dataGuru.map(g => {
+            const s = saved[g.id] || { stLagi: '', stMyAsn: '', valLagi: '', valMyAsn: '' };
+            
+            return `
+                <tr id="row-${g.id}">
+                    <td>
+                        <span class="name-cell">${g.nama}</span>
+                        <span class="mk-label">${g.mk}</span>
+                    </td>
+                    <td><span class="data-value">${g.gol}</span></td>
+                    <td><span class="data-value">${g.tmtPkt}</span></td>
+                    <td><span class="data-value">Rp ${g.gaji}</span></td>
+                    <td><span class="data-value">${g.tmtBer}</span></td>
+                    
+                    <td>
+                        <select onchange="checkStatus(${g.id})" id="stLagi-${g.id}">
+                            <option value="">-- Pilih --</option>
+                            <option value="Sesuai" ${s.stLagi === 'Sesuai' ? 'selected' : ''}>Sesuai</option>
+                            <option value="Tidak Sesuai" ${s.stLagi === 'Tidak Sesuai' ? 'selected' : ''}>Tidak Sesuai</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div id="boxLagi-${g.id}" class="input-koreksi" style="display: ${s.stLagi === 'Tidak Sesuai' ? 'block' : 'none'}">
+                            <input type="text" id="valLagi-${g.id}" value="${s.valLagi}" placeholder="Masukkan data riil...">
+                            <span class="example-text">Cth: Pangkat III/D (TMT 01-10-2024)</span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <select onchange="checkStatus(${g.id})" id="stMyAsn-${g.id}">
+                            <option value="">-- Pilih --</option>
+                            <option value="Sesuai" ${s.stMyAsn === 'Sesuai' ? 'selected' : ''}>Sesuai</option>
+                            <option value="Tidak Sesuai" ${s.stMyAsn === 'Tidak Sesuai' ? 'selected' : ''}>Tidak Sesuai</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div id="boxMyAsn-${g.id}" class="input-koreksi" style="display: ${s.stMyAsn === 'Tidak Sesuai' ? 'block' : 'none'}">
+                            <input type="text" id="valMyAsn-${g.id}" value="${s.valMyAsn}" placeholder="Koreksi MyASN...">
+                            <span class="example-text">Cth: TMT Berkala di MyASN masih 2023</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        dataGuru.forEach(g => checkStatus(g.id));
+    }
+
+    function checkStatus(id) {
+        const row = document.getElementById(`row-${id}`);
+        const stLagi = document.getElementById(`stLagi-${id}`).value;
+        const stMyAsn = document.getElementById(`stMyAsn-${id}`).value;
+
+        document.getElementById(`boxLagi-${id}`).style.display = (stLagi === 'Tidak Sesuai') ? 'block' : 'none';
+        document.getElementById(`boxMyAsn-${id}`).style.display = (stMyAsn === 'Tidak Sesuai') ? 'block' : 'none';
+
+        row.classList.remove('row-green', 'row-red');
+        if (stLagi === 'Sesuai' && stMyAsn === 'Sesuai') {
+            row.classList.add('row-green');
+        } else if (stLagi === 'Tidak Sesuai' || stMyAsn === 'Tidak Sesuai') {
+            row.classList.add('row-red');
+        }
+    }
+
+    function saveAll() {
+        const payload = {};
+        dataGuru.forEach(g => {
+            payload[g.id] = {
+                stLagi: document.getElementById(`stLagi-${g.id}`).value,
+                stMyAsn: document.getElementById(`stMyAsn-${g.id}`).value,
+                valLagi: document.getElementById(`valLagi-${g.id}`).value,
+                valMyAsn: document.getElementById(`valMyAsn-${g.id}`).value
+            };
+        });
+        localStorage.setItem('kenpa_v6_data', JSON.stringify(payload));
+        
+        // Animasi feedback sukses sederhana
+        const btn = document.querySelector('.btn-save');
+        const originalText = btn.innerText;
+        btn.innerText = "✅ Data Berhasil Disimpan!";
+        btn.style.background = "#059669";
+        
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "var(--primary)";
+        }, 2000);
+    }
+
+    renderTable();
+</script>
+
+</body>
+</html>
