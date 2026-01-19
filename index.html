@@ -42,7 +42,7 @@
 
         @keyframes neonPulse {
             from { box-shadow: 0 0 5px rgba(67, 97, 238, 0.6); }
-            to { box-shadow: 0 0 15px rgba(67, 97, 238, 1), 0 0 25px rgba(67, 97, 238, 0.4); }
+            to { box-shadow: 0 0 15px rgba(67, 97, 238, 1), 0 0 25px rgba(67, 97, 238, 0.5); }
         }
 
         /* --- HEADER & TIMER --- */
@@ -81,10 +81,13 @@
             font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 15px rgba(67, 97, 238, 0.3);
         }
 
+        /* --- OVERLAY PENUTUP --- */
         #closedOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 9999; text-align: center; padding-top: 15%;
+            background: #fff; z-index: 9999; text-align: center; padding: 50px 20px;
         }
+        .closed-content { max-width: 600px; margin: 0 auto; padding-top: 5%; }
+        .status-badge { background: #fee2e2; color: #ef4444; padding: 8px 16px; border-radius: 50px; font-weight: 800; font-size: 12px; }
 
         .footer-credit { text-align: center; margin-top: 20px; font-size: 10px; font-weight: 600; color: #94a3b8; }
         .footer-credit span { color: var(--primary); }
@@ -96,9 +99,19 @@
 <body>
 
 <div id="closedOverlay">
-    <div style="font-size: 60px;">🕒</div>
-    <h1 style="color:var(--danger);">BATAS WAKTU HABIS</h1>
-    <p>Sistem verifikasi SMPN 4 Monano telah dikunci otomatis.<br>Hubungi Operator <b>FadliMen</b> jika ada kendala mendesak.</p>
+    <div class="closed-content">
+        <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
+        <span class="status-badge">VERIFIKASI DITUTUP</span>
+        <h1 style="color:var(--slate-800); margin-top: 20px;">Akses Verifikasi Tahap 1 Selesai</h1>
+        <p style="color: #64748b; line-height: 1.6; font-size: 15px;">
+            Waktu pengisian verifikasi data pangkat golongan di MYASN telah berakhir. 
+            <br><br>
+            <b>Informasi:</b> Saat ini operator sekolah sedang memvalidasi seluruh data masuk untuk segera mengirimkannya ke server <b>Dapodikdasmen</b>. 
+            Terima kasih atas kerja samanya.
+        </p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+        <p style="font-size: 12px; color: #94a3b8;">Admin Sistem: FadliMen | SMPN 4 Monano</p>
+    </div>
 </div>
 
 <div class="container" id="mainApp">
@@ -111,7 +124,7 @@
         <div class="timer-box">
             <span class="timer-label">Sisa Waktu Pengisian:</span>
             <span id="timer">--:--:--</span>
-            <div class="update-status">📡 Update Terakhir Server: <span id="lastUpdate">Sinkronisasi...</span></div>
+            <div class="update-status">📡 Sinkronisasi Terakhir: <span id="lastUpdate">Memuat...</span></div>
         </div>
     </div>
 
@@ -141,7 +154,7 @@
     <button class="btn-save" onclick="saveAll()">Simpan Seluruh Perubahan</button>
     
     <div class="footer-credit">
-        CREATED BY <span>FADLIMEN</span> • © 2026 SMPN 4 MONANO
+        DESIGNED BY <span>FADLIMEN</span> • SMPN 4 MONANO
     </div>
 </div>
 
@@ -161,9 +174,8 @@
         { id: 10, nama: "Rita Uno, S.Pd.", mk: "0 Thn", gol: "IX", tmtPkt: "1 Jun 2023", gaji: "2.966.500", tmtBer: "1 Jun 2023" }
     ];
 
-    // --- LOGIKA COUNTDOWN ---
     function startTimer() {
-        const deadline = new Date("2026-01-19T23:59:00+08:00").getTime();
+        const deadline = new Date("2026-01-20T12:00:00+08:00").getTime();
         const timerObj = setInterval(() => {
             const now = new Date().getTime();
             const distance = deadline - now;
@@ -185,19 +197,16 @@
         }, 1000);
     }
 
-    // --- LOAD & RENDER DATA ---
     async function loadData() {
         try {
             const response = await fetch(scriptURL);
             const savedData = await response.json();
             renderTable(savedData);
-            
-            // Set Stempel Waktu (Gunakan waktu sekarang sebagai info update terakhir sukses)
             const now = new Date();
             document.getElementById("lastUpdate").innerText = now.toLocaleTimeString('id-ID') + " WITA";
         } catch (e) {
             renderTable({});
-            document.getElementById("lastUpdate").innerText = "Offline Mode";
+            document.getElementById("lastUpdate").innerText = "Ready (Offline)";
         }
     }
 
@@ -243,7 +252,6 @@
         else if (stLagi === 'Tidak Sesuai' || stMyAsn === 'Tidak Sesuai') row.classList.add('row-red');
     }
 
-    // --- SIMPAN DATA ---
     async function saveAll() {
         const btn = document.querySelector('.btn-save');
         btn.innerText = "⏳ Sedang Mengirim...";
@@ -255,29 +263,25 @@
                 stLagi: document.getElementById(`stLagi-${g.id}`).value,
                 stMyAsn: document.getElementById(`stMyAsn-${g.id}`).value,
                 valLagi: document.getElementById(`valLagi-${g.id}`).value,
-                valMyAsn: document.getElementById(`valMyAsn-${g.id}`).value,
-                lastMod: new Date().toISOString()
+                valMyAsn: document.getElementById(`valMyAsn-${g.id}`).value
             };
         });
 
         try {
             await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert('✅ Berhasil Tersimpan! Data telah disinkronkan ke server.');
-            loadData(); // Segarkan tampilan dan timestamp
+            alert('✅ Berhasil Tersimpan! Data segera divalidasi oleh Operator.');
+            loadData();
         } catch (e) {
-            alert('❌ Terjadi kesalahan koneksi.');
+            alert('❌ Gagal sinkronisasi.');
         } finally {
             btn.innerText = "Simpan Seluruh Perubahan";
             btn.disabled = false;
         }
     }
 
-    // --- INISIALISASI ---
     startTimer();
     loadData();
 </script>
 
 </body>
 </html>
-
-
